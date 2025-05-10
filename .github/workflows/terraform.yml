@@ -29,6 +29,7 @@ jobs:
           terraform_wrapper: false
 
       - name: Terraform Init and Apply
+        working-directory: ./prod
         run: |
           terraform init
           terraform apply -auto-approve
