@@ -29,7 +29,7 @@ jobs:
           terraform_wrapper: false
 
       - name: Terraform Init and Apply
-        working-directory: ./prod
+        working-directory: ./prod/services/webserver-cluster
         run: |
           terraform init
           terraform apply -auto-approve
