@@ -1,6 +1,6 @@
 permissions:
   id-token: write
-  contents: read
+  contents: read #Added this
 name: Terraform Apply
 on:
   push:
