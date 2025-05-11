@@ -1,5 +1,5 @@
 provider "aws" {
-  region  = "us-east-1"
+  region  = "us-east-1"  
   # profile = "terraform" # We are now using OIDC provider in GitHub Action
 
   # Tags to apply to all AWS resources by default
@@ -16,7 +16,7 @@ module "webserver_cluster" {
   source = "github.com/steph-nnamani/modules///services/webserver-cluster?ref=v3.1.0"  # Confirm the version
   #    source = "git::ssh://git@github.com/steph-nnamani/modules.git//services/webserver-cluster?ref=v1.1.0"   # Confirm the version
   ami         = "ami-0866a3c8686eaeeba"
-  server_text = "This is my world now!!!"
+  server_text = "Happy Mothers' Day!!!"
 
   cluster_name            = "webservers-prod"
   db_remote_state_bucket  = "zoe-terraform-running-state"
