@@ -19,7 +19,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           # specify the IAM role to assume here
-          role-to-assume: "arn:aws:iam::418272752575:role/github-actions-oidc-example20250510183651101600000001"
+          role-to-assume: "arn:aws:iam::418272752575:role/github-actions-oidc-example20250511055154010500000001"
           aws-region: us-east-1
 
       - name: Setup Terraform
