@@ -1,6 +1,6 @@
 provider "aws" {
   region  = "us-east-1"
-  profile = "terraform"
+  # profile = "terraform" # We are now using OIDC provider in GitHub Action
 
   # Tags to apply to all AWS resources by default
   default_tags {
