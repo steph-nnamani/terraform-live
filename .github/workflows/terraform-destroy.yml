@@ -1,16 +1,27 @@
 permissions:
   id-token: write
   contents: read 
-name: Terraform Apply
+name: Terraform Destroy
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to destroy (e.g., prod)'
+        required: true
+        default: 'prod'
+      service:
+        description: 'Service to destroy (e.g., webserver-cluster)'
+        required: true
+        default: 'webserver-cluster'
+      confirm_destroy:
+        description: 'Type "destroy" to confirm'
+        required: true
 
 jobs:
-  terraform-apply:
+  terraform-destroy:
     runs-on: ubuntu-latest
-
+    if: github.event.inputs.confirm_destroy == 'destroy'
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -28,8 +39,9 @@ jobs:
           terraform_version: 1.1.0  
           terraform_wrapper: false
 
-      - name: Terraform Init and Apply
+      - name: Terraform Init and Destroy
         working-directory: ./prod/services/webserver-cluster
+#        working-directory: ./${{ github.event.inputs.environment }}/services/${{ github.event.inputs.service }}
         run: |
           terraform init
-          terraform apply -auto-approve
+          terraform destroy -auto-approve
