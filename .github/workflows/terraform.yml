@@ -30,6 +30,7 @@ jobs:
 
       - name: Terraform Init and Apply
         working-directory: ./prod/services/webserver-cluster
-        run: |
-          terraform init
-          terraform apply -auto-approve
+        run: terraform destroy -auto-approve
+        # run: |
+        #   terraform init
+        #   terraform apply -auto-approve
