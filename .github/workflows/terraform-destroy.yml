@@ -39,9 +39,15 @@ jobs:
           terraform_version: 1.1.0  
           terraform_wrapper: false
 
-      - name: Terraform Init and Destroy
+      - name: Terraform Destroy with Dependencies
         working-directory: ./prod/services/webserver-cluster
-#        working-directory: ./${{ github.event.inputs.environment }}/services/${{ github.event.inputs.service }}
         run: |
           terraform init
+          # First destroy resources that depend on security groups
+          terraform destroy -target=module.webserver_cluster.aws_autoscaling_group.example -auto-approve
+          terraform destroy -target=module.webserver_cluster.aws_lb.example -auto-approve
+          # Then destroy security groups
+          terraform destroy -target=module.webserver_cluster.aws_security_group.instance -auto-approve
+          terraform destroy -target=module.webserver_cluster.aws_security_group.alb -auto-approve
+          # Finally destroy everything else
           terraform destroy -auto-approve
