@@ -64,14 +64,20 @@ jobs:
       #       fi
       #     fi
 
-      - name: Terraform init and apply MySql
+      - name: Terraform init and apply MySQL
+        id: mysql
         working-directory: ./prod/data-stores/mysql
         run: |
           terraform init
-          terraform apply
+          terraform apply -auto-approve
+        # This ensures the step is marked as failed if any command fails
+        shell: bash {0}
 
-      - name: Terraform init and apply  Webserver Cluster
+      # This step will only run if the MySQL step succeeds
+      - name: Terraform init and apply Webserver Cluster
+        if: success() && steps.mysql.outcome == 'success'
         working-directory: ./prod/services/webserver-cluster
         run: |
           terraform init
-          terraform apply
+          terraform apply -auto-approve
+        shell: bash {0}
