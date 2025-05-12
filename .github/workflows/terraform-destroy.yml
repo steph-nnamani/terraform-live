@@ -3,6 +3,7 @@ permissions:
   contents: read 
 name: Terraform Destroy
 on:
+  # Keep manual trigger option
   workflow_dispatch:
     inputs:
       environment:
@@ -16,11 +17,16 @@ on:
       confirm_destroy:
         description: 'Type "destroy" to confirm'
         required: true
+  
+  # Add trigger on push to destroy branch
+  push:
+    branches:
+      - destroy
 
 jobs:
   terraform-destroy:
     runs-on: ubuntu-latest
-    if: github.event.inputs.confirm_destroy == 'destroy'
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.confirm_destroy == 'destroy' || github.event_name == 'push' && github.ref == 'refs/heads/destroy'
     
     steps:
       - name: Checkout code
