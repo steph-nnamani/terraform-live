@@ -16,7 +16,7 @@ module "webserver_cluster" {
   source = "github.com/steph-nnamani/modules///services/webserver-cluster?ref=v3.1.1"  # Confirm the version
   #    source = "git::ssh://git@github.com/steph-nnamani/modules.git//services/webserver-cluster?ref=v1.1.0"   # Confirm the version
   ami         = "ami-0866a3c8686eaeeba"
-  server_text = "Happy Mothers' Day!!!"
+  server_text = "Happy Mothers' Sunday!!!"
 
   cluster_name            = "webservers-prod"
   db_remote_state_bucket  = "zoe-terraform-running-state"
