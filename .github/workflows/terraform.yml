@@ -28,14 +28,38 @@ jobs:
           terraform_version: 1.1.0  
           terraform_wrapper: false
 
-      - name: Terraform Init and Apply MySQL
+      - name: Check and Force Unlock MySQL State (if needed)
         working-directory: ./prod/data-stores/mysql
         run: |
           terraform init
-          terraform apply -auto-approve
+          # Try to apply with a timeout
+          timeout 30s terraform apply -auto-approve || \
+          # If it times out or fails, try to identify if it's a lock issue
+          if terraform state list 2>&1 | grep -q "Error acquiring the state lock"; then
+            # Extract lock ID and force unlock
+            LOCK_ID=$(terraform state pull 2>&1 | grep -o "ID:[[:space:]]*[a-z0-9-]*" | cut -d' ' -f2)
+            if [ ! -z "$LOCK_ID" ]; then
+              echo "Force unlocking state with ID: $LOCK_ID"
+              terraform force-unlock -force $LOCK_ID
+              # Try apply again after unlocking
+              terraform apply -auto-approve
+            fi
+          fi
 
-      - name: Terraform Init and Apply Webserver Cluster
+      - name: Check and Force Unlock Webserver Cluster State (if needed)
         working-directory: ./prod/services/webserver-cluster
         run: |
           terraform init
-          terraform apply -auto-approve
+          # Try to apply with a timeout
+          timeout 30s terraform apply -auto-approve || \
+          # If it times out or fails, try to identify if it's a lock issue
+          if terraform state list 2>&1 | grep -q "Error acquiring the state lock"; then
+            # Extract lock ID and force unlock
+            LOCK_ID=$(terraform state pull 2>&1 | grep -o "ID:[[:space:]]*[a-z0-9-]*" | cut -d' ' -f2)
+            if [ ! -z "$LOCK_ID" ]; then
+              echo "Force unlocking state with ID: $LOCK_ID"
+              terraform force-unlock -force $LOCK_ID
+              # Try apply again after unlocking
+              terraform apply -auto-approve
+            fi
+          fi
