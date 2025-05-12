@@ -28,7 +28,13 @@ jobs:
           terraform_version: 1.1.0  
           terraform_wrapper: false
 
-      - name: Terraform Init and Apply
+      - name: Terraform Init and Apply MySQL
+        working-directory: ./prod/data-stores/mysql
+        run: |
+          terraform init
+          terraform apply -auto-approve
+
+      - name: Terraform Init and Apply Webserver Cluster
         working-directory: ./prod/services/webserver-cluster
         run: |
           terraform init
