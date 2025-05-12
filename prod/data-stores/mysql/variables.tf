@@ -2,11 +2,13 @@ variable "db_username" {
   type = string
   sensitive = true
   description = "Username for the database"
+  default = "admin"
 }
 variable "db_password" {
   type = string
   sensitive = true
   description = "Password for the database"
+  default = "awsrds123"
 }
 
 variable "rds" {
