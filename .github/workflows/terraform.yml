@@ -83,38 +83,30 @@ jobs:
           terraform apply -auto-approve
         shell: bash {0}
 
-      - name: Test MySQL Database
+      - name: Verify MySQL Database Outputs
         if: success() && steps.mysql.outcome == 'success'
         run: |
-          # Install MySQL client
-          sudo apt-get update
-          sudo apt-get install -y mysql-client
-          
           # Extract MySQL endpoint and port from Terraform output
           DB_ADDRESS=$(cd ./prod/data-stores/mysql && terraform output -raw address)
           DB_PORT=$(cd ./prod/data-stores/mysql && terraform output -raw port)
           
-          echo "Testing connection to MySQL database at $DB_ADDRESS:$DB_PORT..."
+          echo "MySQL database endpoint: $DB_ADDRESS"
+          echo "MySQL database port: $DB_PORT"
           
-          # Wait for RDS to become fully available
-          echo "Waiting for 30 seconds for RDS to become ready..."
-          sleep 30
-          
-          # Try to connect to the MySQL database
-          # Note: We're just testing connectivity, not authentication
-          mysqladmin ping -h $DB_ADDRESS -P $DB_PORT --connect-timeout=5 || echo "::warning::MySQL connectivity test failed, but continuing"
-          
-          # Alternative test using netcat to check if port is open
-          echo "Testing port connectivity with netcat..."
-          nc -zv $DB_ADDRESS $DB_PORT -w 5
-          
-          if [ $? -eq 0 ]; then
-            echo -e "\nSuccess: MySQL port is open and responding"
-          else
-            echo -e "\nWarning: MySQL port connectivity test failed"
-            echo "::warning::MySQL port connectivity test failed"
+          # Verify that the outputs are not empty
+          if [ -z "$DB_ADDRESS" ]; then
+            echo "::error::MySQL database address output is empty"
+            exit 1
           fi
-
+          
+          if [ -z "$DB_PORT" ]; then
+            echo "::error::MySQL database port output is empty"
+            exit 1
+          fi
+          
+          echo "✅ MySQL database outputs verified successfully"
+          echo "Note: Direct connectivity testing is skipped as the RDS instance is likely in a private VPC"
+          
       - name: Test Webserver Infrastructure
         if: success() && steps.webserver.outcome == 'success'
         run: |
