@@ -105,3 +105,9 @@ jobs:
           # # Finally destroy everything else
           # echo "Destroying remaining resources..."
           terraform destroy -auto-approve
+
+      - name: Terraform Destroy MySQL Database
+        working-directory: ./prod/data-stores/mysql
+        run: |
+          terraform init
+          terraform destroy -auto-approve
