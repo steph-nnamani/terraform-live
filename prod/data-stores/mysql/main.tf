@@ -16,6 +16,7 @@ locals {
     db_creds = jsondecode(data.aws_secretsmanager_secret_version.creds.secret_string)
 }
 
+# You can now use the local variable db_creds to access the username and passwor
 resource "aws_db_instance" "example" {
     identifier_prefix = "${var.rds}-instance"
     engine = "mysql"
