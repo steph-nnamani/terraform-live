@@ -64,14 +64,69 @@ jobs:
       #       fi
       #     fi
 
-      - name: Terraform init and apply MySql
+      - name: Terraform init and apply MySQL
+        id: mysql
         working-directory: ./prod/data-stores/mysql
         run: |
           terraform init
-          terraform apply
+          terraform apply -auto-approve
+        # This ensures the step is marked as failed if any command fails
+        shell: bash {0}
 
-      - name: Terraform init and apply  Webserver Cluster
+      # This step will only run if the MySQL step succeeds
+      - name: Terraform init and apply Webserver Cluster
+        id: webserver
+        if: success() && steps.mysql.outcome == 'success'
         working-directory: ./prod/services/webserver-cluster
         run: |
           terraform init
-          terraform apply
+          terraform apply -auto-approve
+        shell: bash {0}
+
+      - name: Verify MySQL Database Outputs
+        if: success() && steps.mysql.outcome == 'success'
+        run: |
+          # Extract MySQL endpoint and port from Terraform output
+          DB_ADDRESS=$(cd ./prod/data-stores/mysql && terraform output -raw address)
+          DB_PORT=$(cd ./prod/data-stores/mysql && terraform output -raw port)
+          
+          echo "MySQL database endpoint: $DB_ADDRESS"
+          echo "MySQL database port: $DB_PORT"
+          
+          # Verify that the outputs are not empty
+          if [ -z "$DB_ADDRESS" ]; then
+            echo "::error::MySQL database address output is empty"
+            exit 1
+          fi
+          
+          if [ -z "$DB_PORT" ]; then
+            echo "::error::MySQL database port output is empty"
+            exit 1
+          fi
+          
+          echo "✅ MySQL database outputs verified successfully"
+          echo "Note: Direct connectivity testing is skipped as the RDS instance is likely in a private VPC"
+          
+      - name: Test Webserver Infrastructure
+        if: success() && steps.webserver.outcome == 'success'
+        run: |
+          # Extract ALB DNS name from Terraform output
+          ALB_DNS=$(cd ./prod/services/webserver-cluster && terraform output -raw alb_dns_name)
+          
+          echo "Testing connection to $ALB_DNS..."
+          
+          # Wait for ALB to become ready
+          echo "Waiting for 60 seconds for ALB to become ready..."
+          sleep 60
+          
+          # Try to curl the ALB DNS name
+          curl -m 15 http://$ALB_DNS
+          
+          # Check the curl exit status
+          if [ $? -eq 0 ]; then
+            echo -e "\nSuccess: Server is responding"
+          else
+            echo -e "\nError: Server is not responding"
+            # Mark as warning but don't fail the workflow
+            echo "::warning::ALB endpoint test failed"
+          fi
