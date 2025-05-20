@@ -17,8 +17,8 @@ variable "rds" {
   default = "prodawsrds"  # does not accept '-' hyphen
  }
 
-variable "instance_class" {
-  type = string
-  description = "Instance class for the RDS instance"
-  default = "db.t3.micro"
-}
+# variable "instance_class" {
+#   type = string
+#   description = "Instance class for the RDS instance"
+#   default = "db.t3.micro"
+# }
