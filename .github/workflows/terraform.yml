@@ -87,8 +87,8 @@ jobs:
         if: success() && steps.mysql.outcome == 'success'
         run: |
           # Extract MySQL endpoint and port from Terraform output
-          DB_ADDRESS=$(cd ./prod/data-stores/mysql && terraform output -raw address)
-          DB_PORT=$(cd ./prod/data-stores/mysql && terraform output -raw port)
+          DB_ADDRESS=$(cd ./prod/data-stores/mysql && terraform output -raw primary_address)
+          DB_PORT=$(cd ./prod/data-stores/mysql && terraform output -raw primary_port)
           
           echo "MySQL database endpoint: $DB_ADDRESS"
           echo "MySQL database port: $DB_PORT"
