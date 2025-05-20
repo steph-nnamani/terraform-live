@@ -29,7 +29,7 @@ locals {
 module "mysql_primary" {
     # source = "../../../../../staging/modules/data-stores/mysql"
     #source = "C:/Users/xtrah/staging/modules/data-stores/mysql"
-    source = "github.com/steph-nnamani/modules//data-stores/mysql?ref=v1.1.0-data-stores" 
+    source = "github.com/steph-nnamani/modules//data-stores/mysql?ref=v1.1.1-data-stores" 
     # AWS Provider Configuration for this module
     providers = {
         aws = aws.primary
@@ -49,7 +49,7 @@ module "mysql_primary" {
 module "mysql_replica" {
     # source = "../../../../../staging/modules/data-stores/mysql"
     #source = "C:/Users/xtrah/staging/modules/data-stores/mysql"
-    source = "github.com/steph-nnamani/modules//data-stores/mysql?ref=v1.1.0-data-stores" 
+    source = "github.com/steph-nnamani/modules//data-stores/mysql?ref=v1.1.1-data-stores" 
     # AWS Provider Configuration for this module
     providers = {
         aws = aws.replica
