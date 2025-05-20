@@ -36,13 +36,12 @@ module "mysql_primary" {
     providers = {
         aws = aws.primary
     }
-    identifier_prefix = "${var.rds}-instance"
     db_name = "${var.rds}_database"
     # db_name = "prod_db"
     # db_username = var.db_username
     # db_password = var.db_password
-    db_username = local.db_creds.db_username 
-    db_password = local.db_creds.db_password
+    username = local.db_creds.username 
+    password = local.db_creds.password
 
     # Must be enabled to support replication
     backup_retention_period = 1
