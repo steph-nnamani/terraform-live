@@ -36,7 +36,7 @@ module "mysql_primary" {
     providers = {
         aws = aws.primary
     }
-    identifier_prefix = "${var.rds}-instance"
+    #identifier_prefix = "${var.rds}-instance"
     db_name = "${var.rds}_database"
     # db_name = "prod_db"
     # db_username = var.db_username
